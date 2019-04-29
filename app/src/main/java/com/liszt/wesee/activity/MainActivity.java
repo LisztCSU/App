@@ -15,6 +15,9 @@ import android.widget.RadioGroup;
 import android.view.View;
 import android.widget.TextView;
 
+import com.alibaba.sdk.android.push.CloudPushService;
+import com.alibaba.sdk.android.push.CommonCallback;
+import com.alibaba.sdk.android.push.noonesdk.PushServiceFactory;
 import com.liszt.wesee.fragment.MineFragment;
 import com.liszt.wesee.fragment.MineLoginFragment;
 import com.liszt.wesee.fragment.HomeFragment;
@@ -29,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final int VIEW_HOME_INDEX = 0;
     public static final int VIEW_MINE_INDEX = 1;
     private int temp_position_index = -1;
-
+    private CloudPushService mPushService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            Log.v("nmsl:", str);
 //        }
 //        else{Log.v("youdongxi:",str);}
+        mPushService = PushServiceFactory.getCloudPushService();
         initView();
         findViewById(R.id.id_bt_home).setOnClickListener(this);
         findViewById(R.id.id_bt_mine).setOnClickListener(this);
@@ -77,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (temp_position_index != VIEW_MINE_INDEX) {
                     //显示
                     if (sharedPreferences.getString("isAuth","0").equals("1")) {
+                        unBindAccount();
+                        bindAccount(sharedPreferences.getString("uid","0"));
                         fragmentTransaction = getSupportFragmentManager().beginTransaction();
                         fragmentTransaction.replace(R.id.id_fragment_content, mineFragment);
                         fragmentTransaction.commit();
@@ -95,6 +101,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
         }
+    }
+    private void bindAccount(String account) {
+        mPushService.bindAccount(account, new CommonCallback() {
+            @Override
+            public void onSuccess(String s) {
+
+                }
+
+                @Override
+                public void onFailed(String errorCode, String errorMsg) {
+
+                }});
+
+    }
+
+    /**
+     * 解绑账户接口:CloudPushService.unbindAccount调用示例
+     * 1. 调用该接口后,设备与账号的绑定关系解除
+     */
+    private void unBindAccount() {
+        mPushService.unbindAccount(new CommonCallback() {
+            @Override
+            public void onSuccess(String s) {
+
+            }
+
+            @Override
+            public void onFailed(String errorCode, String errorMsg) {
+
+            }
+        });
     }
 
 //    @Override

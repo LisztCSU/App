@@ -15,6 +15,7 @@ import android.widget.ListView;
 
 import com.liszt.wesee.activity.AccountActivity;
 import com.liszt.wesee.R;
+import com.liszt.wesee.activity.AppointmentActivity;
 import com.liszt.wesee.activity.SettingActivity;
 
 
@@ -53,7 +54,7 @@ public class MineFragment extends Fragment{
         super.onActivityCreated(savedInstanceState);
         sharedPreferences = getActivity().getSharedPreferences("Cookies_Prefs",getActivity().MODE_PRIVATE);
         String username = sharedPreferences.getString("username","");
-        String strArr[] = new String[]{"账号管理                                                   "+username, "我的订单", "设置"};
+        String strArr[] = new String[]{"账号管理                                                   "+username, "约看管理", "设置"};
         list_mine =  getView(). findViewById(R.id.list_mine);
          adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, strArr);
         list_mine.setAdapter(adapter);
@@ -64,10 +65,14 @@ public class MineFragment extends Fragment{
                         Intent intent = new Intent(getActivity(),AccountActivity.class);
                         startActivity(intent);
                     }
-                    else if (id ==2){
-                    Intent intent = new Intent(getActivity(),SettingActivity.class);
+                    else if (id ==1){
+                    Intent intent = new Intent(getActivity(),AppointmentActivity.class);
                     startActivity(intent);
                 }
+                    else if (id ==2){
+                        Intent intent = new Intent(getActivity(),SettingActivity.class);
+                        startActivity(intent);
+                    }
 
             }
         });

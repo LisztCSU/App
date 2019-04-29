@@ -289,8 +289,7 @@ public class MapActivity extends AppCompatActivity {
                            if (dataObj != null) {
                                int size = dataObj.length();
 
-                               Intent intent = getIntent();
-                               String mid = intent.getStringExtra("mid");
+                               mid = sharedPreferences.getString("mid","0");
                                for(int i = 0;i<size;i++){
                                    JSONObject json = (JSONObject) dataObj.getJSONObject(i);
 
@@ -309,7 +308,7 @@ public class MapActivity extends AppCompatActivity {
 
 
                        } else {
-                           Toast.makeText(MapActivity.this, "获取列表失败", Toast.LENGTH_LONG).show();
+                           Toast.makeText(MapActivity.this, "获取列表失败或列表为空", Toast.LENGTH_LONG).show();
                        }
                    } catch (JSONException e) {
                        e.printStackTrace();

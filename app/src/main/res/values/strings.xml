@@ -2,4 +2,7 @@
     <string name="app_name">WeSee</string>
     <string name="weseeUrl">http://192.168.0.103:8080/wesee/</string>
     <string name="encoderules">zyx0x20800000000</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

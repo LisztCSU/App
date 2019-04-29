@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.AppointmentActivity">
+    <LinearLayout
+        android:id="@+id/id_bottom_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+    <LinearLayout
+        android:id="@+id/id_bottom_tags"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_above="@+id/id_diverline"
+        android:background="@drawable/bt_tag_bg"
+        android:orientation="horizontal">
+
+        <RadioGroup
+            android:id="@+id/id_navcontent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@color/transparent"
+            android:gravity="center"
+            android:orientation="horizontal">
+           <TextView
+               android:text="我的约看"
+               android:onClick="switchView"
+               android:id="@+id/txt_appointment"
+               android:layout_width="0dp"
+               android:layout_height="wrap_content"
+               android:layout_weight="1"/>
+            <TextView
+                android:text="收到的邀请"
+                android:onClick="switchView"
+                android:id="@+id/txt_recived"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+            <TextView
+                android:text="发出的邀请"
+                android:onClick="switchView"
+                android:id="@+id/txt_invited"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+
+        </RadioGroup>
+    </LinearLayout>
+    <View
+        android:id="@+id/id_diverline"
+        android:layout_above="@+id/id_fragment_content"
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="#C2C5CE"/>
+    <FrameLayout
+        android:id="@+id/id_fragment_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        ></FrameLayout>
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
