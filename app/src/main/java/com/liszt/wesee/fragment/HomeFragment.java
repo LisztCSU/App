@@ -184,6 +184,7 @@ public class HomeFragment extends Fragment{
                         JSONObject obj = new JSONObject(result);
                         int code = obj.optInt("code");
                         if (code == 1) {
+                            myBeanList.clear();
                             JSONArray dataObj = obj.getJSONArray("dataList");
                             if (dataObj != null) {
                                 int size = dataObj.length();

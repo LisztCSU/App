@@ -24,6 +24,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.sdk.android.push.CloudPushService;
+import com.alibaba.sdk.android.push.CommonCallback;
+import com.alibaba.sdk.android.push.noonesdk.PushServiceFactory;
 import com.liszt.wesee.R;
 import com.zhouyou.http.EasyHttp;
 import com.zhouyou.http.callback.SimpleCallBack;
@@ -45,15 +48,16 @@ public class LoginActivity extends AppCompatActivity  {
     CheckBox setVisible;
     String encoderules;
     SharedPreferences pref;
-    private Handler myHandler = null;
-
-    private WeakReference<Handler> mHanderRef = null;
+    private CloudPushService mPushService;
+//    private Handler myHandler = null;
+//    private WeakReference<Handler> mHanderRef = null;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        mPushService = PushServiceFactory.getCloudPushService();
         account = (EditText) findViewById(R.id.account);
         password = (EditText) findViewById(R.id.password);
         clearText = (CheckBox) findViewById(R.id.text_clear);
@@ -223,6 +227,8 @@ public class LoginActivity extends AppCompatActivity  {
                             if (dataObj != null) {
                                 String id = dataObj.optString("id", "");
                                 String username = dataObj.optString("username","");
+                                unBindAccount();
+                                bindAccount(id);
                                 pref = getSharedPreferences("Cookies_Prefs",MODE_PRIVATE);
                                 SharedPreferences.Editor editor = pref.edit();
                                 editor.putString("uid",id);
@@ -263,6 +269,37 @@ public class LoginActivity extends AppCompatActivity  {
 //            }
 //        }
    }
+    private void bindAccount(String account) {
+        mPushService.bindAccount(account, new CommonCallback() {
+            @Override
+            public void onSuccess(String s) {
+
+            }
+
+            @Override
+            public void onFailed(String errorCode, String errorMsg) {
+
+            }});
+
+    }
+
+    /**
+     * 解绑账户接口:CloudPushService.unbindAccount调用示例
+     * 1. 调用该接口后,设备与账号的绑定关系解除
+     */
+    private void unBindAccount() {
+        mPushService.unbindAccount(new CommonCallback() {
+            @Override
+            public void onSuccess(String s) {
+
+            }
+
+            @Override
+            public void onFailed(String errorCode, String errorMsg) {
+
+            }
+        });
+    }
 
 
 }
