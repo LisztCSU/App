@@ -103,7 +103,7 @@ public class AppointmentFragment extends Fragment {
         List<Map<String,Object>> list = new ArrayList<>();
         for(appointmentListBean bean : beanList){
             Map<String,Object> map = new HashMap<>();
-            map.put(from[0],bean.getObjectname());
+            map.put(from[0],bean.getInitiative()+"#"+bean.getObjectname());
             map.put(from[1],bean.getMoviename());
             map.put(from[2],bean.getTime());
             map.put(from[3],bean.getId());
@@ -148,7 +148,9 @@ public MyThread(String uid){
                                         json.getString("id"),
                                         json.getString("objectname"),
                                         json.getString("moviename"),
-                                        json.getString("time")));
+                                        json.getString("time"),
+                                        json.getString("initiative")));
+
                             }
 
                             dataList = initDataList(myBeanList);

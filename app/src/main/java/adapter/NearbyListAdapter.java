@@ -89,6 +89,9 @@ public class NearbyListAdapter extends SimpleAdapter {
                     try {
                         JSONObject obj = new JSONObject(result);
                         int code = obj.optInt("code");
+                        if(code == 2){
+                            Toast.makeText(mcontext,"你已被该用户邀请过", Toast.LENGTH_LONG).show();
+                        }
                         if (code == 1) {
                             Toast.makeText(mcontext, "成功邀请该用户", Toast.LENGTH_LONG).show();
                         } else if (code == 0) {

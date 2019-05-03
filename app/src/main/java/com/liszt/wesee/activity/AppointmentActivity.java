@@ -23,6 +23,7 @@ public class AppointmentActivity extends AppCompatActivity {
     public static final int VIEW_REC_INDEX = 1;
     public static final int VIEW_INV_INDEX = 2;
     private int temp_position_index = -1;
+    private String fragmentId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +31,18 @@ public class AppointmentActivity extends AppCompatActivity {
         setContentView(R.layout.activity_appointment);
         initView();
 
-
+        fragmentId= getIntent().getStringExtra("fragmentId");
+        if (fragmentId!=null&&fragmentId.equals("1")) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.id_fragment_content,ReceivedFragment.getNewInstance())
+                    .addToBackStack(null)
+                    .commit();
+            temp_position_index = VIEW_REC_INDEX;
+            txt1.setTextColor(Color.parseColor("#707070"));
+            txt3.setTextColor(Color.parseColor("#707070"));
+            txt2.setTextColor(Color.parseColor("#00a628"));
+        }
     }
 
     private void initView() {

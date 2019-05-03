@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.util.Pair;
 
-import com.alibaba.sdk.android.push.MessageReceiver;
+import com.alibaba.sdk.android.push.AliyunMessageIntentService;
 import com.alibaba.sdk.android.push.notification.CPushMessage;
 import com.liszt.wesee.activity.AppointmentActivity;
 
@@ -13,7 +13,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.Map;
 
-public class MyMessageReceiver extends MessageReceiver {
+public class MyPushIntentService extends AliyunMessageIntentService {
     // 消息接收部分的LOG_TAG
     public static final String REC_TAG = "receiver";
     @Override
@@ -28,13 +28,6 @@ public class MyMessageReceiver extends MessageReceiver {
     }
     @Override
     public void onNotificationOpened(Context context, String title, String summary, String extraMap) {
-        Log.e("MyMessageReceiver", "onNotificationOpened, title: " + title + ", summary: " + summary + ", extraMap:" + extraMap);
-        Intent intent = new Intent(context,AppointmentActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        if(title.equals("新的邀请")){
-            intent.putExtra("fragmentId","1");
-        }
-        context.startActivity(intent);
 
     }
     @Override

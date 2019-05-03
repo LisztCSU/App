@@ -101,8 +101,22 @@
                 <action android:name="com.alibaba.sdk.android.push.RECEIVE" />
             </intent-filter>
         </receiver>
+        <!--<service android:name=".receiver.MyPushIntentService" >-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.alibaba.push2.action.NOTIFICATION_OPENED" />-->
+            <!--</intent-filter>-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.alibaba.push2.action.NOTIFICATION_REMOVED" />-->
+            <!--</intent-filter>-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.alibaba.sdk.android.push.RECEIVE" />-->
+            <!--</intent-filter>-->
+        <!--</service>-->
 
-        <activity android:name=".activity.AppointmentActivity"></activity>
+        <activity android:name=".activity.AppointmentActivity" />
+        <activity
+            android:name=".activity.ChatActivity"
+            android:windowSoftInputMode="adjustPan"/>
     </application>
 
 </manifest>

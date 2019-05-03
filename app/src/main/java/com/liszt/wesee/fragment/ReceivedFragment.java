@@ -151,7 +151,8 @@ public class ReceivedFragment extends Fragment {
                                             json.getString("id"),
                                             json.getString("objectname"),
                                             json.getString("moviename"),
-                                            json.getString("time")));
+                                            json.getString("time"),
+                                            json.getString("initiative")));
                                 }
 
                                 dataList = initDataList(myBeanList);
