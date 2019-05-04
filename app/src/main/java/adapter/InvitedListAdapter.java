@@ -8,6 +8,7 @@ import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.liszt.wesee.R;
+import com.liszt.wesee.fragment.InvitedFragment;
 import com.zhouyou.http.EasyHttp;
 import com.zhouyou.http.callback.SimpleCallBack;
 import com.zhouyou.http.exception.ApiException;
@@ -21,6 +22,7 @@ import java.util.Map;
 
 public class InvitedListAdapter extends SimpleAdapter {
     private Context mcontext = null;
+    List<? extends Map<String, ?>> dataList;
 
     public InvitedListAdapter(Context context,
                               List<? extends Map<String, ?>> data, int resource,
@@ -28,23 +30,26 @@ public class InvitedListAdapter extends SimpleAdapter {
         super(context, data, resource, from, to);
         // TODO Auto-generated constructor stub
         mcontext = context;
+        dataList = data;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         // TODO Auto-generated method stub
         View view = super.getView(position, convertView, parent);
         HashMap<String, Object> map = (HashMap<String, Object>) getItem(position);
-        Button accept = (Button) view.findViewById(R.id.bt_operation);
-        accept.setText("取消");
+        Button cancel= (Button) view.findViewById(R.id.bt_operation);
+        cancel.setText("取消");
 
         String str = map.get("operation").toString();
-        accept.setTag(str);
+        cancel.setTag(str);
 
-        accept.setOnClickListener(new View.OnClickListener() {
+        cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new MyThread(v.getTag().toString()).start();
+                dataList.remove(position);
+                InvitedListAdapter.this.notifyDataSetChanged();
             }
         });
 

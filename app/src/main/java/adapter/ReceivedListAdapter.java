@@ -25,6 +25,7 @@ import java.util.Map;
 public class ReceivedListAdapter extends SimpleAdapter {
     private Context mcontext = null;
     private SharedPreferences sharedPreferences;
+    List<? extends Map<String, ?>> dataList;
 
     public ReceivedListAdapter(Context context,
                                List<? extends Map<String, ?>> data, int resource,
@@ -32,10 +33,11 @@ public class ReceivedListAdapter extends SimpleAdapter {
         super(context, data, resource, from, to);
         // TODO Auto-generated constructor stub
         mcontext = context;
+        dataList = data;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         // TODO Auto-generated method stub
         View view = super.getView(position, convertView, parent);
         HashMap<String, Object> map = (HashMap<String, Object>) getItem(position);
@@ -49,6 +51,8 @@ public class ReceivedListAdapter extends SimpleAdapter {
             @Override
             public void onClick(View v) {
                  new MyThread(v.getTag().toString()).start();
+                dataList.remove(position);
+                ReceivedListAdapter.this.notifyDataSetChanged();
             }
         });
         Button reject = (Button) view.findViewById(R.id.bt_operation2);
@@ -61,6 +65,8 @@ public class ReceivedListAdapter extends SimpleAdapter {
             @Override
             public void onClick(View v) {
                 new MyThread2(v.getTag().toString()).start();
+                dataList.remove(position);
+                ReceivedListAdapter.this.notifyDataSetChanged();
             }
         });
 
@@ -119,6 +125,7 @@ public class ReceivedListAdapter extends SimpleAdapter {
                         int code = obj.optInt("code");
                         if (code == 1) {
                             Toast.makeText(mcontext, "拒绝邀请成功", Toast.LENGTH_LONG).show();
+
                         } else {
                             Toast.makeText(mcontext, "操作失败", Toast.LENGTH_LONG).show();
                         }

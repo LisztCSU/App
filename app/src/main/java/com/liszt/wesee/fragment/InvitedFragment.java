@@ -2,13 +2,13 @@ package com.liszt.wesee.fragment;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.liszt.wesee.R;
@@ -28,18 +28,12 @@ import java.util.Map;
 import adapter.InvitedListAdapter;
 import bean.appointmentListBean;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link InvitedFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link InvitedFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class InvitedFragment extends Fragment {
     private View rootView;
     private static InvitedFragment invitedFragment;
     private ListView listview;
+    private TextView empty;
     private Context mContext;
     private SharedPreferences sharedPreferences;
     private String uid;
@@ -85,6 +79,7 @@ public class InvitedFragment extends Fragment {
         uid = sharedPreferences.getString("uid","0");
         new MyThread(uid).start();
         listview = (ListView) getView().findViewById(R.id.list_invite);
+        empty = (TextView) getView().findViewById(R.id.id_emptyList);
         adapter = new InvitedListAdapter(mContext, dataList,
                 R.layout.appiontment_list, from,
                 new int[] {R.id.txt_objectname,R.id.txt_moviename,R.id.txt_time,R.id.bt_operation});
@@ -99,19 +94,18 @@ public class InvitedFragment extends Fragment {
 
 
 
-    public List<Map<String,Object>> initDataList(List<appointmentListBean> beanList){
-        List<Map<String,Object>> list = new ArrayList<>();
-        for(appointmentListBean bean : beanList){
+    public void initDataList(){
+       dataList.clear();
+        for(appointmentListBean bean : myBeanList){
             Map<String,Object> map = new HashMap<>();
             map.put(from[0],bean.getObjectname());
             map.put(from[1],bean.getMoviename());
             map.put(from[2],bean.getTime());
             map.put(from[3],bean.getId());
-            list.add(map);
+            dataList.add(map);
         }
-        adapter.notifyDataSetChanged();
 
-        return list;
+
 
     }
     class MyThread extends Thread {
@@ -152,12 +146,16 @@ public class InvitedFragment extends Fragment {
                                             json.getString("initiative")));
                                 }
 
-                                dataList = initDataList(myBeanList);
+                               initDataList();
+                                adapter.notifyDataSetChanged();
+                                empty.setVisibility(View.GONE);
                             }
 
 
                         } else {
-                            Toast.makeText(mContext, "获取列表失败", Toast.LENGTH_LONG).show();
+                            dataList.clear();
+                            adapter.notifyDataSetChanged();
+                           empty.setVisibility(View.VISIBLE);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

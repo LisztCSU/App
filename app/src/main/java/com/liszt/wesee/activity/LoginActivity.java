@@ -73,20 +73,20 @@ public class LoginActivity extends AppCompatActivity  {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 if(TextUtils.isEmpty(account.getText())){
-                    clearText.setChecked(false);
+                    clearText.setVisibility(View.INVISIBLE);
                 }
                 else {
-                    clearText.setChecked(true);
+                    clearText.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if(TextUtils.isEmpty(account.getText())){
-                    clearText.setChecked(false);
+                    clearText.setVisibility(View.INVISIBLE);
                 }
                 else {
-                    clearText.setChecked(true);
+                    clearText.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -104,12 +104,15 @@ public class LoginActivity extends AppCompatActivity  {
         setVisible.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                int index = password.getText().toString().length();
                 if(isChecked){
                     password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                    password.setSelection(index);//解决光标归零问题
 
                 }
                 else {
                     password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                    password.setSelection(index);
                 }
             }
         });

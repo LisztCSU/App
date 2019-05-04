@@ -24,8 +24,9 @@
         android:id="@+id/text_clear"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/text_close"
-        android:button="@null"/>
+        android:background="@mipmap/close"
+        android:button="@null"
+        android:visibility="invisible"/>
 </LinearLayout>
     <View
         android:layout_width="match_parent"

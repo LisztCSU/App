@@ -1,7 +1,9 @@
 package com.liszt.wesee.receiver;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.util.Pair;
 
@@ -13,9 +15,12 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.Map;
 
+import datahelper.DatabaseHelper;
+
 public class MyMessageReceiver extends MessageReceiver {
     // 消息接收部分的LOG_TAG
     public static final String REC_TAG = "receiver";
+
     @Override
     public void onNotification(Context context, String title, String summary, Map<String, String> extraMap) {
         // TODO 处理推送通知
@@ -23,7 +28,18 @@ public class MyMessageReceiver extends MessageReceiver {
     }
     @Override
     public void onMessage(Context context, CPushMessage cPushMessage) {
+       DatabaseHelper helper = new DatabaseHelper(context, "chat_db", null, 1);
+       SQLiteDatabase db = helper.getWritableDatabase();
         Log.e("MyMessageReceiver", "onMessage, messageId: " + cPushMessage.getMessageId() + ", title: " + cPushMessage.getTitle() + ", content:" + cPushMessage.getContent());
+        String arr[] = cPushMessage.getTitle().split("&&");
+        ContentValues values = new ContentValues();
+        values.put("id",arr[1]);
+        values.put("account",arr[0]);
+        values.put("time",arr[2]);
+        values.put("content",cPushMessage.getContent());
+        //数据库执行插入命令
+        db.insert("record", null, values);
+        //传递数据
         EventBus.getDefault().postSticky(new Pair<String, String>(cPushMessage.getTitle(), cPushMessage.getContent()));
     }
     @Override

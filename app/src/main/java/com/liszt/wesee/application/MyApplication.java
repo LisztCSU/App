@@ -19,7 +19,17 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
 import com.zhouyou.http.EasyHttp;
+import com.zhouyou.http.cache.converter.SerializableDiskConverter;
+import com.zhouyou.http.cache.model.CacheMode;
 import com.zhouyou.http.cookie.CookieManger;
+import com.zhouyou.http.utils.HttpLog;
+
+import java.io.File;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
+
+import okhttp3.Cache;
 
 import static android.content.ContentValues.TAG;
 
@@ -39,7 +49,18 @@ public class MyApplication extends Application {
                 .debug("EasyHttp")
                 .setRetryCount(3)
                 .setConnectTimeout(3000)
-                .setCookieStore(new CookieManger(this));
+                .setReadTimeOut(3000)
+                .setWriteTimeOut(3000)
+                .setCookieStore(new CookieManger(this))
+                .setCacheMode(CacheMode.FIRSTCACHE)
+                .setCacheVersion(1)
+                .setCacheTime(7)
+                .setCacheMaxSize(10*1024*1024)
+                .setCacheDirectory(new File(getExternalCacheDir().toString(),"cache"))
+                .setHostnameVerifier(new UnSafeHostnameVerifier(getString(R.string.weseeUrl)))
+                .setCacheDiskConverter(new SerializableDiskConverter())
+                .setCertificates();//信任所有证书
+
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).imageDownloader(
                 new BaseImageDownloader(this, 60 * 1000, 60 * 1000)) // connectTimeout超时时间
                 .build();
@@ -80,5 +101,22 @@ public class MyApplication extends Application {
             }
         });
     }
+    public class UnSafeHostnameVerifier implements HostnameVerifier {
+        private String host;
+
+        public UnSafeHostnameVerifier(String host) {
+            this.host = host;
+            HttpLog.i("###############　UnSafeHostnameVerifier " + host);
+        }
+
+        @Override
+        public boolean verify(String hostname, SSLSession session) {
+            HttpLog.i("############### verify " + hostname + " " + this.host);
+            if (this.host == null || "".equals(this.host) || !this.host.contains(hostname))
+                return false;
+            return true;
+        }
+    }
+
 
 }

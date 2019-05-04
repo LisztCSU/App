@@ -136,13 +136,6 @@ private void initDataList(){
            adapter.notifyDataSetChanged();
            list_chat.setSelection(adapter.getCount() - 1);
        }//判断是否同一个会话
-        ContentValues values = new ContentValues();
-        values.put("id",arr[1]);
-        values.put("account",arr[0]);
-        values.put("time",arr[2]);
-        values.put("content",pair.second);
-        //数据库执行插入命令
-        db.insert(TABLE_NAME, null, values);
 
     }
     static class MyThread extends Thread{

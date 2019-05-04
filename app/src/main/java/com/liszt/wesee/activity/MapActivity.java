@@ -55,6 +55,7 @@ public class MapActivity extends AppCompatActivity {
     private MapView mMapView = null;
     private BaiduMap mBaiduMap =null;
     private ListView listView = null;
+    private TextView empty = null;
     private Button refresh = null;
     private LocationClient mLocationClient;
     private boolean isFirstLocation;
@@ -122,6 +123,7 @@ public class MapActivity extends AppCompatActivity {
             }
         });
         listView = (ListView) findViewById(R.id.user_nearby);
+        empty = (TextView) findViewById(R.id.id_emptyList);
         adapter = new NearbyListAdapter(MapActivity.this, dataList,
                 R.layout.nearby_list, from,
                 new int[] {R.id.user_info,R.id.user_distance,R.id.bt_invite});
@@ -304,11 +306,14 @@ public class MapActivity extends AppCompatActivity {
                                }
                                addMarkers(myBeanList);
                                 initDataList(dataList,myBeanList);
+                                empty.setVisibility(View.GONE);
                            }
 
 
                        } else {
-                           Toast.makeText(MapActivity.this, "获取列表失败或列表为空", Toast.LENGTH_LONG).show();
+                           dataList.clear();
+                           adapter.notifyDataSetChanged();
+                              empty.setVisibility(View.VISIBLE);
                        }
                    } catch (JSONException e) {
                        e.printStackTrace();
