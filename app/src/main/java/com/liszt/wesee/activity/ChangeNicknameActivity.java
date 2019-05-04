@@ -74,16 +74,23 @@ public class ChangeNicknameActivity extends AppCompatActivity {
                         JSONObject obj = new JSONObject(result);
                         int code = obj.optInt("code");
                         if (code == 1) {
+                            Toast.makeText(ChangeNicknameActivity.this, "修改成功", Toast.LENGTH_LONG).show();
                             Intent intent = new Intent(ChangeNicknameActivity.this, AccountActivity.class);
                             startActivity(intent);
                             finish();
-                        } else {
+                        } else if(code == -1) {
                             Toast.makeText(ChangeNicknameActivity.this, "未登录", Toast.LENGTH_LONG).show();
                             PersistentCookieStore cookieStore = new PersistentCookieStore(getApplicationContext());
                             cookieStore.removeAll();
                             Intent intent = new Intent(ChangeNicknameActivity.this, LoginActivity.class);
                             startActivity(intent);
                             finish();
+                        }
+                        else if(code == -2){
+                            Toast.makeText(ChangeNicknameActivity.this, "非法的昵称", Toast.LENGTH_LONG).show();
+                        }
+                        else {
+                                Toast.makeText(ChangeNicknameActivity.this, "修改失败", Toast.LENGTH_LONG).show();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

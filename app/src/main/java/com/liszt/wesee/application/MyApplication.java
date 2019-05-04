@@ -50,15 +50,8 @@ public class MyApplication extends Application {
                 .setRetryCount(3)
                 .setConnectTimeout(3000)
                 .setReadTimeOut(3000)
-                .setWriteTimeOut(3000)
                 .setCookieStore(new CookieManger(this))
-                .setCacheMode(CacheMode.FIRSTCACHE)
-                .setCacheVersion(1)
-                .setCacheTime(7)
-                .setCacheMaxSize(10*1024*1024)
-                .setCacheDirectory(new File(getExternalCacheDir().toString(),"cache"))
                 .setHostnameVerifier(new UnSafeHostnameVerifier(getString(R.string.weseeUrl)))
-                .setCacheDiskConverter(new SerializableDiskConverter())
                 .setCertificates();//信任所有证书
 
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).imageDownloader(

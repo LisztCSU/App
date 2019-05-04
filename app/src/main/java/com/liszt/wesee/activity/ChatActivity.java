@@ -39,6 +39,8 @@ import java.util.Map;
 import Cookies.PersistentCookieStore;
 import bean.ChatListBean;
 import datahelper.DatabaseHelper;
+import datahelper.SensitiveWord;
+import watchers.emptyWatcher;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -73,6 +75,9 @@ public class ChatActivity extends AppCompatActivity {
         db = helper.getWritableDatabase();
         msg = (EditText) findViewById(R.id.txt_chat);
         sendMsg =(Button) findViewById(R.id.bt_sendMsg);
+        EditText[] editTextList = {msg};
+        Button[] buttonList = {sendMsg};
+        msg.addTextChangedListener(new emptyWatcher(editTextList,buttonList));
         list_chat = (ListView) findViewById(R.id.id_list_chat);
         adapter = new SimpleAdapter(ChatActivity.this, dataList,
                 R.layout.chat_list, from,
@@ -89,7 +94,7 @@ public class ChatActivity extends AppCompatActivity {
                 Map<String,Object> map = new HashMap<>();
                 map.put(from[0],account);
                 map.put(from[1],time);
-                map.put(from[2],msg.getText().toString());
+                map.put(from[2],new SensitiveWord(ChatActivity.this,msg.getText().toString()).replace());
                 dataList.add(map);
                 adapter.notifyDataSetChanged();
                 list_chat.setSelection(adapter.getCount()-1);
