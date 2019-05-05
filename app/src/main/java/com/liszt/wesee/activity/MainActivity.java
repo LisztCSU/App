@@ -2,6 +2,7 @@ package com.liszt.wesee.activity;
 
 
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import android.graphics.Color;
@@ -14,11 +15,18 @@ import android.view.Menu;
 import android.widget.RadioGroup;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.liszt.wesee.fragment.MineFragment;
 import com.liszt.wesee.fragment.MineLoginFragment;
 import com.liszt.wesee.fragment.HomeFragment;
 import com.liszt.wesee.R;
+import com.zhouyou.http.EasyHttp;
+import com.zhouyou.http.callback.SimpleCallBack;
+import com.zhouyou.http.exception.ApiException;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -35,11 +43,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         sharedPreferences = getSharedPreferences("Cookies_Prefs",MODE_PRIVATE);
-//        String str=sharedPreferences.getString("isAuth","0");
-//        if(str.equals("0")) {
-//            Log.v("nmsl:", str);
-//        }
-//        else{Log.v("youdongxi:",str);}
+        String token=sharedPreferences.getString("token","0");
+        String uid = sharedPreferences.getString("uid","0");
+        if(!token.equals("0")&&!uid.equals("0")) {
+              autoLogin(uid,token,MainActivity.this);
+        }
+
 
         initView();
         findViewById(R.id.id_bt_home).setOnClickListener(this);
@@ -77,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.id_bt_mine:
                 if (temp_position_index != VIEW_MINE_INDEX) {
                     //显示
-                    if (sharedPreferences.getString("isAuth","0").equals("1")) {
+                    if (sharedPreferences.getString("uid","0").length()>1) {
                         fragmentTransaction = getSupportFragmentManager().beginTransaction();
                         fragmentTransaction.replace(R.id.id_fragment_content, mineFragment);
                         fragmentTransaction.commit();
@@ -97,6 +106,57 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         }
     }
+public void autoLogin(String uid,String token,Context context){
+
+        new MyThread(uid,token,context).start();
+}
+static class MyThread extends Thread{
+        private String uid;
+        private String token;
+        private Context context;
+       public MyThread(String uid,String token,Context context){
+           this.uid = uid;
+           this.token = token;
+           this.context = context;
+       }
+       @Override
+    public void run(){
+           EasyHttp.get("user/autoLogin").params("uid",uid).params("token",token).execute(new SimpleCallBack<String>() {
+               @Override
+               public void onError(ApiException e) {
+                   Toast.makeText(context, "自动登录失败", Toast.LENGTH_LONG).show();
+               }
+
+               @Override
+               public void onSuccess(String result) {
+                   try {
+                       JSONObject obj =  new JSONObject(result);
+                       int code = obj.optInt("code");
+                       if (code == 1) {
+                           JSONObject dataObj = obj.optJSONObject("data");
+                           if (dataObj != null) {
+                               String id = dataObj.optString("id", "");
+                               String username = dataObj.optString("username","");
+                               String token = dataObj.optString("token","");
+                               SharedPreferences sharedPreferences = context.getSharedPreferences("Cookies_Prefs",MODE_PRIVATE);
+                               SharedPreferences.Editor editor = sharedPreferences.edit();
+                               editor.putString("uid",id);
+                               editor.putString("username",username);
+                               editor.putString("token",token);
+                               editor.apply();
+                           }
+
+                       } else if(code==-1) {
+                           Toast.makeText(context, "已在其他设备登录", Toast.LENGTH_LONG).show();
+                       }
+                   } catch (JSONException e) {
+                       e.printStackTrace();
+                   }
+               }
+           });
+
+       }
+}
 
 
 //    @Override
@@ -144,6 +204,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switchView(v);
     }
+
 }
 
 

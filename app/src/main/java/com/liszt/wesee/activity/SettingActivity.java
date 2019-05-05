@@ -149,8 +149,6 @@ public class SettingActivity extends AppCompatActivity {
 
                         } else if (code == -1) {
                             Toast.makeText(SettingActivity.this, "未登录或用户不一致", Toast.LENGTH_LONG).show();
-                            PersistentCookieStore cookieStore = new PersistentCookieStore(getApplicationContext());
-                            cookieStore.removeAll();
                             Intent intent = new Intent(SettingActivity.this,LoginActivity.class);
                             startActivity(intent);
                             finish();

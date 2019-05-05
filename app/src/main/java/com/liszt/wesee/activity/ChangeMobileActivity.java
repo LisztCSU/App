@@ -183,8 +183,6 @@ public class ChangeMobileActivity extends AppCompatActivity {
                             Toast.makeText(ChangeMobileActivity.this, "验证码错误", Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(ChangeMobileActivity.this, "未登录", Toast.LENGTH_LONG).show();
-                            PersistentCookieStore cookieStore = new PersistentCookieStore(getApplicationContext());
-                            cookieStore.removeAll();
                             Intent intent = new Intent(ChangeMobileActivity.this, LoginActivity.class);
                             startActivity(intent);
                             finish();

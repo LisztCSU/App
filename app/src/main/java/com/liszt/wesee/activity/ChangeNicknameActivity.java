@@ -80,8 +80,6 @@ public class ChangeNicknameActivity extends AppCompatActivity {
                             finish();
                         } else if(code == -1) {
                             Toast.makeText(ChangeNicknameActivity.this, "未登录", Toast.LENGTH_LONG).show();
-                            PersistentCookieStore cookieStore = new PersistentCookieStore(getApplicationContext());
-                            cookieStore.removeAll();
                             Intent intent = new Intent(ChangeNicknameActivity.this, LoginActivity.class);
                             startActivity(intent);
                             finish();

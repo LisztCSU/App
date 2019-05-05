@@ -230,13 +230,14 @@ public class LoginActivity extends AppCompatActivity  {
                             if (dataObj != null) {
                                 String id = dataObj.optString("id", "");
                                 String username = dataObj.optString("username","");
+                                String token = dataObj.optString("token","");
                                 unBindAccount();
                                 bindAccount(id);
                                 pref = getSharedPreferences("Cookies_Prefs",MODE_PRIVATE);
                                 SharedPreferences.Editor editor = pref.edit();
                                 editor.putString("uid",id);
                                 editor.putString("username",username);
-                                editor.putString("isAuth","1");
+                                editor.putString("token",token);
                                 editor.apply();
                                 Intent intent = new Intent(LoginActivity.this,MainActivity.class);
                                 startActivity(intent);

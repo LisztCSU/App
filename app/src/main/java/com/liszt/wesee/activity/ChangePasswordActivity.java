@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.liszt.wesee.R;
 import com.zhouyou.http.EasyHttp;
@@ -22,13 +23,16 @@ import Cookies.PersistentCookieStore;
 import datahelper.AESencrypt;
 import watchers.confirmPasswordWatcher;
 import watchers.emptyWatcher;
+import watchers.passwordWatcher;
 
 public class ChangePasswordActivity extends AppCompatActivity {
 
     SharedPreferences sharedPreferences;
     EditText oldPassword;
     EditText newPassword;
+    TextView wrongpassword;
     EditText confirmPassword;
+    TextView notsame;
     Button change;
     String uid;
     String encoderules;
@@ -40,7 +44,9 @@ public class ChangePasswordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_change_password);
         oldPassword = (EditText) findViewById(R.id.password_old);
         newPassword = (EditText) findViewById(R.id.password_new);
+        wrongpassword = (TextView) findViewById(R.id.txt_wrongpassword);
         confirmPassword = (EditText) findViewById(R.id.password_confirm);
+        notsame = (TextView) findViewById(R.id.txt_notsame);
         change = (Button) findViewById(R.id.bt_change);
         EditText editTextList[] = {oldPassword, newPassword, confirmPassword};
         Button buttonList[] = {change};
@@ -48,7 +54,8 @@ public class ChangePasswordActivity extends AppCompatActivity {
         oldPassword.addTextChangedListener(new emptyWatcher(editTextList, buttonList));
         newPassword.addTextChangedListener(new emptyWatcher(editTextList, buttonList));
         confirmPassword.addTextChangedListener(new emptyWatcher(editTextList, buttonList));
-        confirmPassword.addTextChangedListener(new confirmPasswordWatcher(confirmPassword, newPassword, this));
+        oldPassword.addTextChangedListener(new passwordWatcher(oldPassword,wrongpassword));
+        confirmPassword.addTextChangedListener(new confirmPasswordWatcher(confirmPassword, newPassword,notsame));
         sharedPreferences = getSharedPreferences("Cookies_Prefs", MODE_PRIVATE);
         uid = sharedPreferences.getString("uid", "0");
         change.setOnClickListener(new View.OnClickListener() {
@@ -102,8 +109,6 @@ public class ChangePasswordActivity extends AppCompatActivity {
                         } else if (code == 3) {
                             Toast.makeText(ChangePasswordActivity.this, "密码不一致", Toast.LENGTH_LONG).show();
                         } else {
-                            PersistentCookieStore cookieStore = new PersistentCookieStore(getApplicationContext());
-                            cookieStore.removeAll();
                             Intent intent = new Intent(ChangePasswordActivity.this, LoginActivity.class);
                             startActivity(intent);
                             finish();
