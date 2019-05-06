@@ -81,7 +81,7 @@ public class InvitedFragment extends Fragment {
         listview = (ListView) getView().findViewById(R.id.list_invite);
         empty = (TextView) getView().findViewById(R.id.id_emptyList);
         adapter = new InvitedListAdapter(mContext, dataList,
-                R.layout.appiontment_list, from,
+                R.layout.invite_list, from,
                 new int[] {R.id.txt_objectname,R.id.txt_moviename,R.id.txt_time,R.id.bt_operation});
 
         listview.setAdapter(adapter);

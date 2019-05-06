@@ -46,7 +46,6 @@ public class MyMessageReceiver extends MessageReceiver {
     public void onNotificationOpened(Context context, String title, String summary, String extraMap) {
         Log.e("MyMessageReceiver", "onNotificationOpened, title: " + title + ", summary: " + summary + ", extraMap:" + extraMap);
         Intent intent = new Intent(context,AppointmentActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         if(title.equals("新的邀请")){
             intent.putExtra("fragmentId","1");
         }
