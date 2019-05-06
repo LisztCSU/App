@@ -62,8 +62,11 @@ public class MovieListAdapter extends SimpleAdapter {
         mate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new MyThread(uid,v.getTag().toString()).start();
-                sharedPreferences.edit().putString("mid",v.getTag().toString()).apply();
+                String str = v.getTag().toString();
+                new MyThread(uid,v.getTag().toString(),mcontext).start();
+                Intent intent = new Intent(mcontext, MapActivity.class);
+                intent.putExtra("mid",v.getTag().toString());
+                mcontext.startActivity(intent);
 
             }
         });
@@ -85,13 +88,15 @@ public class MovieListAdapter extends SimpleAdapter {
         return view;
     }
 
-    class MyThread extends Thread {
+  static   class MyThread extends Thread {
         private String uid;
         private String mid;
+        private Context mcontext;
 
-        public MyThread(String uid, String mid) {
+        public MyThread(String uid, String mid,Context mcontext) {
             this.uid = uid;
             this.mid = mid;
+            this.mcontext = mcontext;
         }
 
         @Override
@@ -107,14 +112,10 @@ public class MovieListAdapter extends SimpleAdapter {
                     try {
                         JSONObject obj = new JSONObject(result);
                         int code = obj.optInt("code");
-                        if (code == 1) {
-                            Intent intent = new Intent(mcontext, MapActivity.class);
-                            //sharedPreferences.edit().putString("mid",mid).apply();
-                            mcontext.startActivity(intent);
-                        } else if (code == 0) {
+                        if (code == -1) {
+                                Toast.makeText(mcontext, "未登录", Toast.LENGTH_LONG).show();
+                            } else if (code == 0) {
                             Toast.makeText(mcontext, "操作失败", Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(mcontext, "未登录", Toast.LENGTH_LONG).show();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

@@ -3,6 +3,7 @@ package adapter;
 
 import android.content.Context;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.liszt.wesee.R;
+import com.liszt.wesee.activity.LoginActivity;
 import com.zhouyou.http.EasyHttp;
 import com.zhouyou.http.callback.SimpleCallBack;
 import com.zhouyou.http.exception.ApiException;
@@ -25,6 +27,7 @@ import java.util.Map;
 public class ReceivedListAdapter extends SimpleAdapter {
     private Context mcontext = null;
     private SharedPreferences sharedPreferences;
+    private String uid;
     List<? extends Map<String, ?>> dataList;
 
     public ReceivedListAdapter(Context context,
@@ -43,6 +46,8 @@ public class ReceivedListAdapter extends SimpleAdapter {
         HashMap<String, Object> map = (HashMap<String, Object>) getItem(position);
         Button accept = (Button) view.findViewById(R.id.bt_operation1);
         accept.setText("接受");
+        sharedPreferences = mcontext.getSharedPreferences("Cookies_Prefs",mcontext.MODE_PRIVATE);
+        uid = sharedPreferences.getString("uid","0");
 
         String str = map.get("operation1").toString();
         accept.setTag(str);
@@ -50,7 +55,7 @@ public class ReceivedListAdapter extends SimpleAdapter {
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                 new MyThread(v.getTag().toString()).start();
+                 new MyThread(uid,v.getTag().toString(),mcontext).start();
                 dataList.remove(position);
                 ReceivedListAdapter.this.notifyDataSetChanged();
             }
@@ -64,7 +69,7 @@ public class ReceivedListAdapter extends SimpleAdapter {
         reject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new MyThread2(v.getTag().toString()).start();
+                new MyThread2(uid,v.getTag().toString(),mcontext).start();
                 dataList.remove(position);
                 ReceivedListAdapter.this.notifyDataSetChanged();
             }
@@ -73,14 +78,18 @@ public class ReceivedListAdapter extends SimpleAdapter {
 
         return view;
     }
-    class MyThread extends Thread{
+   static class MyThread extends Thread{
         private String id;
-        public MyThread(String id){
+        private String uid;
+        private Context mcontext;
+        public MyThread(String uid,String id,Context mcontext){
+            this.uid = uid;
             this.id = id;
+            this.mcontext = mcontext;
         }
         @Override
         public void run() {
-            EasyHttp.get("appointment/accept").params("id",id).execute(new SimpleCallBack<String>() {
+            EasyHttp.get("appointment/accept").params("uid",uid).params("id",id).execute(new SimpleCallBack<String>() {
                 @Override
                 public void onError(ApiException e) {
                     Toast.makeText(mcontext, "操作失败", Toast.LENGTH_LONG).show();
@@ -93,7 +102,12 @@ public class ReceivedListAdapter extends SimpleAdapter {
                         int code = obj.optInt("code");
                         if (code == 1) {
                             Toast.makeText(mcontext, "成功接受邀请", Toast.LENGTH_LONG).show();
-                        } else {
+                        }
+                        else if(code == -1){
+                            Toast.makeText(mcontext, "未登录", Toast.LENGTH_LONG).show();
+                            Intent intent = new Intent(mcontext, LoginActivity.class);
+                            mcontext.startActivity(intent);
+                        }else {
                             Toast.makeText(mcontext, "操作失败", Toast.LENGTH_LONG).show();
                         }
                     } catch (JSONException e) {
@@ -105,14 +119,18 @@ public class ReceivedListAdapter extends SimpleAdapter {
 
         }
     }
-    class MyThread2 extends Thread{
+  static  class MyThread2 extends Thread{
         private String id;
-        public MyThread2(String id){
+        private String uid;
+        private Context mcontext;
+        public MyThread2(String uid,String id,Context mcontext){
+            this.uid = uid;
             this.id = id;
+            this.mcontext = mcontext;
         }
         @Override
         public void run() {
-            EasyHttp.get("appointment/reject").params("id",id).execute(new SimpleCallBack<String>() {
+            EasyHttp.get("appointment/reject").params("uid",uid).params("id",id).execute(new SimpleCallBack<String>() {
                 @Override
                 public void onError(ApiException e) {
                     Toast.makeText(mcontext, "操作失败", Toast.LENGTH_LONG).show();
@@ -126,7 +144,12 @@ public class ReceivedListAdapter extends SimpleAdapter {
                         if (code == 1) {
                             Toast.makeText(mcontext, "拒绝邀请成功", Toast.LENGTH_LONG).show();
 
-                        } else {
+                        }
+                        else if(code == -1){
+                            Toast.makeText(mcontext, "未登录", Toast.LENGTH_LONG).show();
+                            Intent intent = new Intent(mcontext, LoginActivity.class);
+                            mcontext.startActivity(intent);
+                        }else {
                             Toast.makeText(mcontext, "操作失败", Toast.LENGTH_LONG).show();
                         }
                     } catch (JSONException e) {

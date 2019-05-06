@@ -1,6 +1,7 @@
 package adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 
 
 import com.liszt.wesee.R;
+import com.liszt.wesee.activity.LoginActivity;
 import com.zhouyou.http.EasyHttp;
 import com.zhouyou.http.callback.SimpleCallBack;
 import com.zhouyou.http.exception.ApiException;
@@ -56,7 +58,7 @@ public class NearbyListAdapter extends SimpleAdapter {
             @Override
             public void onClick(View v) {
                 String str[] = v.getTag().toString().split("@");
-                     new MyThread(uid,str[0],str[1]).start();
+                     new MyThread(uid,str[0],str[1],mcontext).start();
             }
         });
 
@@ -65,15 +67,17 @@ public class NearbyListAdapter extends SimpleAdapter {
 
         return view;
     }
-    class MyThread extends Thread {
+  static   class MyThread extends Thread {
         private String uid;
         private String uid2;
         private String mid;
+        private Context mcontext;
 
-        public MyThread(String uid,String uid2,String mid) {
+        public MyThread(String uid,String uid2,String mid,Context mcontext) {
             this.uid = uid;
             this.uid2=uid2;
             this.mid = mid;
+            this.mcontext = mcontext;
         }
 
         @Override
@@ -98,6 +102,9 @@ public class NearbyListAdapter extends SimpleAdapter {
                             Toast.makeText(mcontext, "你已邀请过该用户", Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(mcontext, "未登录", Toast.LENGTH_LONG).show();
+                                Intent intent = new Intent(mcontext, LoginActivity.class);
+                                mcontext.startActivity(intent);
+
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

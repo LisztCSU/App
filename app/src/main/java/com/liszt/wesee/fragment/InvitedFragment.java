@@ -1,6 +1,7 @@
 package com.liszt.wesee.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.liszt.wesee.R;
+import com.liszt.wesee.activity.LoginActivity;
+import com.liszt.wesee.activity.RegisterActivity;
 import com.zhouyou.http.EasyHttp;
 import com.zhouyou.http.callback.SimpleCallBack;
 import com.zhouyou.http.exception.ApiException;
@@ -152,7 +155,13 @@ public class InvitedFragment extends Fragment {
                             }
 
 
-                        } else {
+                        }
+                        else if(code == -1){
+                            Toast.makeText(mContext, "未登录", Toast.LENGTH_LONG).show();
+                            Intent intent = new Intent(mContext, LoginActivity.class);
+                           startActivity(intent);
+                        }
+                        else {
                             dataList.clear();
                             adapter.notifyDataSetChanged();
                            empty.setVisibility(View.VISIBLE);

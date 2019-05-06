@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.liszt.wesee.R;
@@ -58,6 +59,7 @@ public class ChatActivity extends AppCompatActivity {
     private SimpleAdapter adapter;
     private EditText msg;
     private Button sendMsg;
+    private TextView object;
     private String chatId;
     private String account;
     private String uid;
@@ -68,13 +70,16 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
         Intent intent = getIntent();
         chatId = intent.getStringExtra("chatId");
-        account = intent.getStringExtra("account");
+        account = intent.getStringExtra("myname");
+
         sharedPreferences = getSharedPreferences("Cookies_Prefs",MODE_PRIVATE);
         uid = sharedPreferences.getString("uid","0");
         helper = new DatabaseHelper(this, "chat_db", null, 1);//dbName数据库名
         db = helper.getWritableDatabase();
         msg = (EditText) findViewById(R.id.txt_chat);
         sendMsg =(Button) findViewById(R.id.bt_sendMsg);
+        object = (TextView) findViewById(R.id.txt_objectname);
+        object.setText(intent.getStringExtra("objectname"));
         EditText[] editTextList = {msg};
         Button[] buttonList = {sendMsg};
         msg.addTextChangedListener(new emptyWatcher(editTextList,buttonList));

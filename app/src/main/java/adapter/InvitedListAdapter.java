@@ -1,6 +1,7 @@
 package adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -8,6 +9,7 @@ import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.liszt.wesee.R;
+import com.liszt.wesee.activity.LoginActivity;
 import com.liszt.wesee.fragment.InvitedFragment;
 import com.zhouyou.http.EasyHttp;
 import com.zhouyou.http.callback.SimpleCallBack;
@@ -47,7 +49,7 @@ public class InvitedListAdapter extends SimpleAdapter {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new MyThread(v.getTag().toString()).start();
+                new MyThread(v.getTag().toString(),mcontext).start();
                 dataList.remove(position);
                 InvitedListAdapter.this.notifyDataSetChanged();
             }
@@ -57,11 +59,13 @@ public class InvitedListAdapter extends SimpleAdapter {
         return view;
     }
 
-    class MyThread extends Thread {
+  static   class MyThread extends Thread {
         private String id;
-
-        public MyThread(String id) {
+        private Context mcontext;
+        public MyThread(String id,Context mcontext) {
             this.id = id;
+            this.mcontext = mcontext;
+
         }
 
         @Override
@@ -79,7 +83,12 @@ public class InvitedListAdapter extends SimpleAdapter {
                         int code = obj.optInt("code");
                         if (code == 1) {
                             Toast.makeText(mcontext, "取消成功", Toast.LENGTH_LONG).show();
-                        } else {
+                        }
+                        else if(code == -1){
+                            Toast.makeText(mcontext, "未登录", Toast.LENGTH_LONG).show();
+                            Intent intent = new Intent(mcontext, LoginActivity.class);
+                            mcontext.startActivity(intent);
+                        }else {
                             Toast.makeText(mcontext, "操作失败", Toast.LENGTH_LONG).show();
                         }
                     } catch (JSONException e) {

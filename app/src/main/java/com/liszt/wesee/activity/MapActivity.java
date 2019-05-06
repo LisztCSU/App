@@ -12,9 +12,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.baidu.location.BDAbstractLocationListener;
@@ -60,6 +62,7 @@ public class MapActivity extends AppCompatActivity {
     private LocationClient mLocationClient;
     private boolean isFirstLocation;
     private NearbyListAdapter adapter;
+    private Context mcontext = null;
     private static final String from[] ={"info","distance","invite"};
     private List<nearbyListBean> myBeanList = new ArrayList<>();
     List<Map<String, Object>> dataList = new ArrayList<>();
@@ -74,7 +77,9 @@ public class MapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         sharedPreferences = getSharedPreferences("Cookies_Prefs",MODE_PRIVATE);
         uid = sharedPreferences.getString("uid","0");
-
+        Intent intent = getIntent();
+        mid = intent.getStringExtra("mid");
+        mcontext = MapActivity.this;
 
 
         setContentView(R.layout.activity_map);
@@ -116,9 +121,8 @@ public class MapActivity extends AppCompatActivity {
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mid = sharedPreferences.getString("mid","0");
-                MyThread2 thread = new  MapActivity.MyThread2(uid,mid);
-                thread.start();
+                new MyThread2(uid,mid,myBeanList,dataList,mcontext,empty,adapter,mBaiduMap).start();
+
 
             }
         });
@@ -130,31 +134,6 @@ public class MapActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
 
         }
-    public void initDataList(List<Map<String,Object>> list,List<nearbyListBean> beanList){
-
-        for(nearbyListBean bean : beanList){
-            Map<String,Object> map = new HashMap<>();
-
-            map.put(from[0],bean.getNickname()+"@"+bean.getUsername());
-            map.put(from[1],"离你"+bean.getDistance()+"公里");
-            map.put(from[2],bean.getUid2()+"@"+bean.getMid());
-
-            list.add(map);
-        }
-        adapter.notifyDataSetChanged();
-
-
-    }
-    public void addMarkers(List<nearbyListBean> beanList){
-        for(nearbyListBean bean:beanList) {
-            LatLng latLng = new LatLng(bean.getLatitude(),bean.getLongitude());
-            View view = getLayoutInflater().inflate(R.layout.marker, null);
-            TextView textView = (TextView) view.findViewById(R.id.marker_nickname);
-            textView.setText(bean.getNickname());
-
-            mBaiduMap.addOverlay(new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.fromView(view)));
-        }
-    }
 
 
 
@@ -213,20 +192,22 @@ public class MapActivity extends AppCompatActivity {
             Log.e("lyl", "update:" + latLng1);
             mBaiduMap.setMyLocationData(locData);
 
-            new MapActivity.MyThread(uid, location.getLongitude(),location.getLatitude()).start();
+            new MapActivity.MyThread(uid, location.getLongitude(),location.getLatitude(),mcontext).start();
 
         }
     }
-    class MyThread extends Thread {
+  static class MyThread extends Thread {
         private String uid;
         private double longitude;
         private double latitude;
-;
+        private Context mcontext;
+        private SimpleAdapter adapter;
 
-        public MyThread(String uid, double longitude, double latitude ) {
+        public MyThread(String uid, double longitude, double latitude,Context mcontext ) {
             this.uid = uid;
             this.longitude = longitude;
             this.latitude = latitude;
+            this.mcontext = mcontext;
 
         }
 
@@ -235,7 +216,7 @@ public class MapActivity extends AppCompatActivity {
             EasyHttp.get("location/add").params("uid",uid).params("longitude",longitude+"").params("latitude",latitude+"").execute(new SimpleCallBack<String>() {
                 @Override
                 public void onError(ApiException e) {
-                    Toast.makeText(MapActivity.this, "请求失败", Toast.LENGTH_LONG).show();
+                    Toast.makeText(mcontext, "请求失败", Toast.LENGTH_LONG).show();
                 }
 
                 @Override
@@ -244,15 +225,12 @@ public class MapActivity extends AppCompatActivity {
                         JSONObject obj = new JSONObject(result);
                         int code = obj.optInt("code");
                         if (code == -1) {
-                            Toast.makeText(MapActivity.this, "未登录", Toast.LENGTH_LONG).show();
-                            PersistentCookieStore cookieStore = new PersistentCookieStore(getApplicationContext());
-                            cookieStore.removeAll();
-                            Intent intent = new Intent(MapActivity.this, LoginActivity.class);
-                            startActivity(intent);
-                            finish();
+                            Toast.makeText(mcontext, "未登录", Toast.LENGTH_LONG).show();
+                            Intent intent = new Intent(mcontext, LoginActivity.class);
+                            mcontext.startActivity(intent);
                         } else if (code == 0) {
 
-                            Toast.makeText(MapActivity.this, "更新位置失败", Toast.LENGTH_LONG).show();
+                            Toast.makeText(mcontext, "更新位置失败", Toast.LENGTH_LONG).show();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -263,19 +241,31 @@ public class MapActivity extends AppCompatActivity {
 
     }
 
-  class MyThread2 extends Thread{
+static class MyThread2 extends Thread{
         private  String uid;
         private  String mid;
-       public MyThread2(String uid,String mid){
+    private List<nearbyListBean> myBeanList ;
+    private List<Map<String, Object>> dataList;
+    private Context mcontext;
+    private TextView empty;
+    private SimpleAdapter adapter;
+    private BaiduMap mBaiduMap;
+       public MyThread2(String uid,String mid,List<nearbyListBean> myBeanList, List<Map<String, Object>> dataList,Context mcontext,TextView empty,SimpleAdapter adapter,  BaiduMap mBaiduMap){
            this.uid = uid;
            this.mid = mid;
+           this.dataList = dataList;
+           this.myBeanList = myBeanList;
+           this.mcontext = mcontext;
+           this.empty = empty;
+           this.adapter = adapter;
+           this.mBaiduMap = mBaiduMap;
        }
        @Override
       public  void run(){
            EasyHttp.get("nearby/getNearbyList").params("uid",uid).params("mid",mid).execute(new SimpleCallBack<String>() {
                @Override
                public void onError(ApiException e) {
-                   Toast.makeText(MapActivity.this, "请求失败", Toast.LENGTH_LONG).show();
+                   Toast.makeText(mcontext, "请求失败", Toast.LENGTH_LONG).show();
                }
 
                @Override
@@ -284,14 +274,13 @@ public class MapActivity extends AppCompatActivity {
                        JSONObject obj = new JSONObject(result);
                        int code = obj.optInt("code");
                        if (code == 1) {
-                           Toast.makeText(MapActivity.this, "刷新列表成功", Toast.LENGTH_LONG).show();
+                           Toast.makeText(mcontext, "刷新列表成功", Toast.LENGTH_LONG).show();
                            myBeanList.clear();
                            dataList.clear();
                            JSONArray dataObj = obj.getJSONArray("dataList");
                            if (dataObj != null) {
                                int size = dataObj.length();
 
-                               mid = sharedPreferences.getString("mid","0");
                                for(int i = 0;i<size;i++){
                                    JSONObject json = (JSONObject) dataObj.getJSONObject(i);
 
@@ -304,8 +293,24 @@ public class MapActivity extends AppCompatActivity {
                                                                      mid));
 
                                }
-                               addMarkers(myBeanList);
-                                initDataList(dataList,myBeanList);
+                               for(nearbyListBean bean:myBeanList) {
+                                   LatLng latLng = new LatLng(bean.getLatitude(),bean.getLongitude());
+                                   View view = LayoutInflater.from(mcontext).inflate(R.layout.marker, null);
+                                   TextView textView = (TextView) view.findViewById(R.id.marker_nickname);
+                                   textView.setText(bean.getNickname());
+
+                                   mBaiduMap.addOverlay(new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.fromView(view)));
+                               }
+                               for(nearbyListBean bean : myBeanList){
+                                   Map<String,Object> map = new HashMap<>();
+
+                                   map.put(from[0],bean.getNickname()+"@"+bean.getUsername());
+                                   map.put(from[1],"离你"+bean.getDistance()+"公里");
+                                   map.put(from[2],bean.getUid2()+"@"+bean.getMid());
+
+                                   dataList.add(map);
+                               }
+                               adapter.notifyDataSetChanged();
                                 empty.setVisibility(View.GONE);
                            }
 
@@ -313,7 +318,7 @@ public class MapActivity extends AppCompatActivity {
                        } else {
                            dataList.clear();
                            adapter.notifyDataSetChanged();
-                              empty.setVisibility(View.VISIBLE);
+                           empty.setVisibility(View.VISIBLE);
                        }
                    } catch (JSONException e) {
                        e.printStackTrace();
